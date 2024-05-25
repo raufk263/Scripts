@@ -7,8 +7,8 @@ screenshot_dir="/home/rauf/Pictures/Screenshots/"
 find "$screenshot_dir" -type f -name "*.png" -mtime +7 -exec rm {} \;
 
 #---------------------------------------------------------------------------------------------------------README----------------------------------------------------------------------------------------------
-#This is bash script created to delete an screesnhot older than 7 days. It's an demonstration of script that is used in screesnshot case but the real life scenario can be deleting log files older than 7 days
-#or X no. of days
+#This is bash script created to delete an screesnhot older than 7 days. It's an demonstration of script that is used in screesnshot case but the scenario can be deleting log files older than 7 days
+#or X no. of days from the server.
 
 #Step 1 - Create an bash script named DeleteSS.sh
 
