@@ -6,6 +6,12 @@ screenshot_dir="/home/rauf/Pictures/Screenshots/"
 # Delete screenshots older than 7 days
 find "$screenshot_dir" -type f -name "*.png" -mtime +7 -exec rm {} \;
 
+#-----------------------------------------------------------------
+# To Move the screenshots to trash instead of rm add below line--
+
+
+# find "$screenshot_dir" -type f -name "*.png" -mtime +7 -exec gio trash {} \;
+
 #---------------------------------------------------------------------------------------------------------README----------------------------------------------------------------------------------------------
 #This is bash script created to delete an screesnhot older than 7 days. It's an demonstration of script that is used in screesnshot case but the scenario can be deleting log files older than 7 days
 #or X no. of days from the server.
