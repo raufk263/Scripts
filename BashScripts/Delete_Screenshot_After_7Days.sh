@@ -25,6 +25,6 @@ find "$screenshot_dir" -type f -name "*.png" -mtime +7 -exec rm {} \;
 # Enter command on termianl crontab -e and paste the 2nd line in crontab
 
 # $ crontab -e
-# 0 0 */7 * * /home/rauf/BashScripts/DeleteSS.h
+# 0 0 * * */7  /home/rauf/BashScripts/DeleteSS.h
 
 #-----------------------------------------------------------------------------------------------THANK YOU !!---------------------------------------------------------------------------------------------------
