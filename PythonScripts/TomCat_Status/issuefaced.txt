@@ -1,0 +1,8 @@
+# Make sure to enable SSM in the server 
+# Allow port 22 in SG for SSM
+# Allow port 8080 for tomcat is working in the browser or not with public IP.
+# While running the script local on AWS CLI i faced an issue of region, my EC2 was hosted in us-west-2 but my AWS CLI was configured in us-east-2 so make sure to change the region if you face issue after running script.
+
+# Make sure to install Java before installing tomcat
+
+----EOF---
