@@ -97,44 +97,38 @@ def main():
     if node_type_filter not in valid_node_types:
         parser.error(f"Invalid --type value '{args.type}'. Choose from: Application, Worker, all")
 
-    print(f"🔍 Fetching SSM-managed EC2 instances with Name filter: {node_type_filter}...")
-    all_instances = get_ssm_managed_instances()
-    if not all_instances:
-        print("⚠️ No SSM-managed instances found.")
+    print(f"🔍 Fetching SSM-managed EC2 instances...")
+    ssm_managed_instances = get_ssm_managed_instances()
+
+    print(f"🔍 Fetching all EC2 instances with Name filter: {node_type_filter}...")
+    filters = [{'Name': 'instance-state-name', 'Values': ['running']}]
+    if node_type_filter != 'all':
+        filters.append({'Name': 'tag:Name', 'Values': [f"*{node_type_filter}*"]})
+
+    reservations = ec2_client.describe_instances(Filters=filters)['Reservations']
+    all_instance_ids = []
+    for reservation in reservations:
+        for instance in reservation['Instances']:
+            all_instance_ids.append(instance['InstanceId'])
+
+    instance_info = get_instance_names(all_instance_ids)
+
+    if not instance_info:
+        print(f"⚠️ No EC2 instances found matching Name filter '{node_type_filter}'.")
         return
 
-    instance_info = get_instance_names(all_instances)
-
-    # Debug print only matching nodes by Name tag and --type argument
-    print(f"\n🔎 All SSM Instances with '{node_type_filter}' in their Name:")
-    for iid, meta in instance_info.items():
-        if node_type_filter == 'all':
-            if 'Application' in meta['Name'] or 'Worker' in meta['Name']:
-                print(f"  - {iid}: Name={meta['Name']}")
-        else:
-            if node_type_filter in meta['Name']:
-                print(f"  - {iid}: Name={meta['Name']}")
-
-    # Filter instances based on Name substring matching
-    if node_type_filter == 'all':
-        filtered_instances = [
-            iid for iid, meta in instance_info.items()
-            if ('Application' in meta['Name']) or ('Worker' in meta['Name'])
-        ]
-    else:
-        filtered_instances = [
-            iid for iid, meta in instance_info.items()
-            if node_type_filter in meta['Name']
-        ]
-
-    if not filtered_instances:
-        print(f"\n⚠️ No EC2 instances found matching Name filter '{node_type_filter}'.")
-        return
-
-    for instance_id in filtered_instances:
-        instance_name = instance_info[instance_id]['Name']
+    for instance_id, meta in instance_info.items():
+        instance_name = meta['Name']
         print("\n----------------------------------------------")
         print(f"📦 Instance ID: {instance_id} | Name: {instance_name}")
+
+        if instance_id in ssm_managed_instances:
+            print("✅ SSM Agent is online")
+        else:
+            print("❌ SSM Agent is not online")
+            print("🔌 Ping status: Connection lost")
+            print("❗ The SSM Agent was unable to connect to a Systems Manager endpoint to register itself with the service.")
+            continue
 
         try:
             command_id = send_tomcat_check_command(instance_id)
